@@ -8,9 +8,9 @@ module EventMachine
             :google => URLShortener::Google
         }
 
-        def self.shorten(url, driver=DEFAULT_DRIVER, *args)
-            r = DRIVERS[driver].new(url, *args)
-            r.shorten
+        def self.shorten(url, driver=DEFAULT_DRIVER, account={})
+            r = DRIVERS[driver].new(account)
+            r.shorten(url)
         end
     end
 end

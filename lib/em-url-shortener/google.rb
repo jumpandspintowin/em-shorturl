@@ -11,40 +11,29 @@ module EventMachine
         class Google
             include EventMachine::Deferrable
 
-            # Specifies the API base URL
-            API_URL = "https://www.googleapis.com/urlshortener"
-
-            # Specifies the API relative path to url shortening
-            SHORTEN_ACTION = "/v1/url"
-
-            attr_reader :long_url
-            attr_reader :short_url
-            attr_reader :error
+            # Specifies the API URL for shortening URLs
+            API_URL = "https://www.googleapis.com/urlshortener/v1/url"
 
 
             ##
             # Takes the URL to shorten and optionally two callbacks for success
             # and error. Does not immediately shorten the URL.
+            #
+            # The +account+ argument may take the following options:
+            #   :apikey     Defines an apikey to use for the request
 
-            def initialize(url, success_callback = nil, error_callback = nil)
-                @long_url = url
-                @short_url = nil
-                @error = nil
+            def initialize(account={})
                 @deferrable_args = [self]
-
-                callback(&success_callback) if success_callback
-                errback(&error_callback) if error_callback
+                @account_apikey = account[:apikey]
             end
 
             
             ##
             # Performs the request of shortening a URL asynchronously.
 
-            def shorten
-                request = EventMachine::HttpRequest.new(API_URL + SHORTEN_ACTION).post(
-                    :head => { "Content-Type" => "application/json" },
-                    :body => { "longUrl" => @long_url }.to_json
-                )
+            def shorten(url)
+                params = get_request_parameters(url)
+                request = EventMachine::HttpRequest.new(API_URL).post(params)
                 request.callback(&method(:on_success))
                 request.errback(&method(:on_error))
                 self
@@ -52,6 +41,23 @@ module EventMachine
 
 
             private
+
+
+            ##
+            # Creates the parameter hash for the HTTP Request to Google
+            
+            def get_request_parameters(url)
+                options = {
+                    :head => { "Content-Type" => "application/json" },
+                    :body => { "longUrl" => url }.to_json
+                }
+
+                if @account_apikey
+                    options[:query] = { "key" => @account_apikey }
+                end
+
+                options
+            end
             
             ##
             # Callback for HttpRequest object upon success. Parses the response
@@ -66,23 +72,27 @@ module EventMachine
                 begin
                     response = JSON.parse(http.response)
                 rescue JSON::ParseError => e
-                    @error = e.message
-                    @deferrable_args << @error
-                    fail(*@deferrable_args)
+                    error = e.message
+                    fail(error, *@deferrable_args)
                     return
                 end
 
                 # Handle google API Error
                 if response['error']
-                    @error = response['error']['message']
-                    @deferrable_args << @error
-                    fail(*@deferrable_args)
+                    error = response['error']['message']
+                    fail(error, *@deferrable_args)
                     return
                 end
 
+                # Odd case if response['id'] doesn't exist (Should't happen)
+                if response['id'].nil?
+                    error = "No short URL was returned (Google API Change?)"
+                    fail(error, *@deferrable_args)
+                end
+
                 # Return the short URL
-                @short_url = response['id']
-                succeed(*@deferrable_args)
+                short_url = response['id']
+                succeed(short_url, *@deferrable_args)
             end
 
 
@@ -92,9 +102,8 @@ module EventMachine
             # value and sets the deferrable status to fail.
 
             def on_error(http)
-                @error = http.error
-                @deferrable_args << @error
-                fail(*@deferrable_args)
+                error = http.error
+                fail(error, *@deferrable_args)
             end
         end
     end
