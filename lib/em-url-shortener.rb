@@ -1,4 +1,5 @@
 require 'eventmachine'
+require 'em-url-shortener/version'
 require 'em-url-shortener/google'
 
 module EventMachine
@@ -9,6 +10,8 @@ module EventMachine
         }
 
         def self.shorten(url, driver=DEFAULT_DRIVER, account={})
+            raise KeyError, "Driver does not exist" unless DRIVERS[driver]
+
             r = DRIVERS[driver].new(account)
             r.shorten(url)
         end

@@ -1,7 +1,7 @@
 require 'eventmachine'
 require "test/unit"
-require_relative "../lib/em-url-shortener/google.rb"
-require_relative "../lib/em-url-shortener.rb"
+require "em-url-shortener/google"
+require "em-url-shortener"
 
 class TestGoogle < Test::Unit::TestCase
     TEST_URL = 'http://google.com'
