@@ -1,7 +1,5 @@
-require 'eventmachine'
 require "test/unit"
-require "em-url-shortener/google"
-require "em-url-shortener"
+require "em-shorturl/google"
 
 class TestGoogle < Test::Unit::TestCase
     TEST_URL = 'http://google.com'
@@ -9,7 +7,7 @@ class TestGoogle < Test::Unit::TestCase
 
     def test_no_auth
         EM.run do
-            google = EM::URLShortener::Google.new
+            google = EM::ShortURL::Google.new
             set_asserts(google)
             google.shorten(TEST_URL)
         end
@@ -19,16 +17,9 @@ class TestGoogle < Test::Unit::TestCase
         EM.run do
             assert(false, "No '#{API_ENV_VAR}' environment variable set") unless ENV[API_ENV_VAR]
 
-            google = EM::URLShortener::Google.new(:apikey => ENV[API_ENV_VAR])
+            google = EM::ShortURL::Google.new(:apikey => ENV[API_ENV_VAR])
             set_asserts(google)
             google.shorten(TEST_URL)
-        end
-    end
-
-    def test_module_call_no_auth
-        EM.run do
-            google = EM::URLShortener.shorten(TEST_URL, :google)
-            set_asserts(google)
         end
     end
 

@@ -1,12 +1,12 @@
 require 'eventmachine'
-require 'em-url-shortener/version'
-require 'em-url-shortener/google'
+require 'em-shorturl/version'
+require 'em-shorturl/google'
 
 module EventMachine
-    module URLShortener
+    module ShortURL
         DEFAULT_DRIVER = :google
         DRIVERS = {
-            :google => URLShortener::Google
+            :google => ShortURL::Google
         }
 
         def self.shorten(url, driver=DEFAULT_DRIVER, account={})

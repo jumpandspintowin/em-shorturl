@@ -1,8 +1,8 @@
-require "em-url-shortener/version"
+require "em-shorturl/version"
 
 Gem::Specification.new do |s|
-    s.name          = 'em-url-shortener'
-    s.version       = EM::URLShortener::VERSION
+    s.name          = 'em-shorturl'
+    s.version       = EM::ShortURL::VERSION
     s.authors       = ['Nik Johnson']
     s.email         = ['nikjohnson08@gmail.com']
     s.summary       = 'An EventMachine module for shortening urls'

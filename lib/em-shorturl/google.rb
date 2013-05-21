@@ -2,7 +2,7 @@ require 'em-http-request'
 require 'json'
 
 module EventMachine
-    module URLShortener
+    module ShortURL
 
         ##
         # The Google class is the driver for URLShortener to use Google's API
