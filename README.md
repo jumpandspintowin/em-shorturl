@@ -5,14 +5,14 @@ EventMachine module for shortening urls.
 
 Usage
 -----
-
-  require 'em-shorturl'
   
-  EM.run do
-    request = EM::ShortURL.shorten('http://google.com')
-    request.callback { |url, request| puts "Short URL: #{url}" }
-    request.errback { |error, request| puts "Received error: #{error}" }
-  end
+    require 'em-shorturl'
+    
+    EM.run do
+      request = EM::ShortURL.shorten('http://google.com')
+      request.callback { |url, request| puts "Short URL: #{url}" }
+      request.errback { |error, request| puts "Received error: #{error}" }
+    end
 
 Supported Services
 ------------------
