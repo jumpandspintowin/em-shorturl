@@ -13,14 +13,18 @@ class TestGoogle < Test::Unit::TestCase
         end
     end
 
-    def test_with_apikey
-        EM.run do
-            assert(false, "No '#{API_ENV_VAR}' environment variable set") unless ENV[API_ENV_VAR]
+    if ENV[API_ENV_VAR]
+        def test_with_apikey
 
-            google = EM::ShortURL::Google.new(:apikey => ENV[API_ENV_VAR])
-            set_asserts(google)
-            google.shorten(TEST_URL)
+            EM.run do
+
+                google = EM::ShortURL::Google.new(:apikey => ENV[API_ENV_VAR])
+                set_asserts(google)
+                google.shorten(TEST_URL)
+            end
         end
+    else
+        warn "Skipping test_with_apikey: No '#{API_ENV_VAR}' environment variable set"
     end
 
     private
