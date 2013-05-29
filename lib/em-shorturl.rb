@@ -1,6 +1,7 @@
 require 'eventmachine'
 require 'em-shorturl/version'
 require 'em-shorturl/google'
+require 'em-shorturl/tinyurl'
 
 module EventMachine
 
@@ -13,7 +14,8 @@ module EventMachine
     module ShortURL
         DEFAULT_DRIVER = :google
         DRIVERS = {
-            :google => ShortURL::Google
+            :google => ShortURL::Google,
+            :tinyurl => ShortURL::TinyURL
         }
 
 
