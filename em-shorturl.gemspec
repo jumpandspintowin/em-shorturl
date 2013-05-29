@@ -17,5 +17,5 @@ Gem::Specification.new do |s|
     s.test_files    = Dir["test/**/*.rb"]
     s.require_path  = 'lib'
 
-    s.add_dependency 'em-http-request'
+    s.add_runtime_dependency 'em-http-request', '~> 1.0'
 end

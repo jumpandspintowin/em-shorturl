@@ -2,6 +2,7 @@ require 'eventmachine'
 require 'em-shorturl/version'
 require 'em-shorturl/google'
 require 'em-shorturl/tinyurl'
+require 'em-shorturl/bitly'
 
 module EventMachine
 
@@ -15,7 +16,8 @@ module EventMachine
         DEFAULT_DRIVER = :google
         DRIVERS = {
             :google => ShortURL::Google,
-            :tinyurl => ShortURL::TinyURL
+            :tinyurl => ShortURL::TinyURL,
+            :bitly => ShortURL::Bitly
         }
 
 
