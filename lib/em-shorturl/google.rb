@@ -80,6 +80,14 @@ module EventMachine
             def on_success(http)
                 response = nil
 
+                # Handle HTTP Status other than 200
+                if http.response_header.status != 200
+                    error = http.response_header.http_reason
+                    fail(error, *@deferrable_args)
+                    return
+                end
+
+
                 # Handle JSON Failure
                 begin
                     response = JSON.parse(http.response)
