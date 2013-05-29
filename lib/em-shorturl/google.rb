@@ -7,6 +7,11 @@ module EventMachine
         ##
         # The Google class is the driver for URLShortener to use Google's API
         # for URL shortening.
+        #
+        # As a deferrable, instances accept callback procs in calls to
+        # callback() and errback(). Callbacks are provided arguments
+        # +shorturl+ and +self+, while errbacks are provided +err_string+
+        # and +self+.
 
         class Google
             include EventMachine::Deferrable
@@ -16,8 +21,9 @@ module EventMachine
 
 
             ##
-            # Takes the URL to shorten and optionally two callbacks for success
-            # and error. Does not immediately shorten the URL.
+            # Initializes the driver instance, optionally with account information
+            # for making requests on behalf of an account. Benefits of using an api key
+            # include higher request limits and stat tracking.
             #
             # The +account+ argument may take the following options:
             #   :apikey     Defines an apikey to use for the request
@@ -27,9 +33,14 @@ module EventMachine
                 @account_apikey = account[:apikey]
             end
 
-            
+
             ##
-            # Performs the request of shortening a URL asynchronously.
+            # Performs the request of shortening a URL asynchronously. Returns self,
+            # which is a deferrable. This allows a usage like the following:
+            #
+            #   EM::ShortURL::Google.new.shorten('http://google.com').callback do |u,d|
+            #       puts "Shorturl: #{u}"
+            #   end
 
             def shorten(url)
                 params = get_request_parameters(url)
@@ -45,7 +56,7 @@ module EventMachine
 
             ##
             # Creates the parameter hash for the HTTP Request to Google
-            
+
             def get_request_parameters(url)
                 options = {
                     :head => { "Content-Type" => "application/json" },
@@ -58,7 +69,8 @@ module EventMachine
 
                 options
             end
-            
+
+
             ##
             # Callback for HttpRequest object upon success. Parses the response
             # as JSON, checks for a Google API error, and finally saves the
